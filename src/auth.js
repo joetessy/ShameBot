@@ -1,5 +1,3 @@
-// Initialize Add to Slack (OAuth) helpers
-
 const passport = require('passport');
 const SlackStrategy = require('@aoberoi/passport-slack').default.Strategy;
 const SlackClient = require('@slack/client').WebClient;
