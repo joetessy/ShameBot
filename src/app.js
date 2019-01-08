@@ -19,5 +19,9 @@ app.get('/auth/slack/callback',
     res.status(500).send(`<p>Greet and React failed to install</p> <pre>${err}</pre>`);
   }
 );
+app.get('/slack/shameboard', (req, res) => {
+  console.log('slash command invoked');
+})
+
 
 module.exports = app;
