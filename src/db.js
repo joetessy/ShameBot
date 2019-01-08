@@ -26,7 +26,7 @@ const addOrUpdateUserAndBannedWords = function(user_name, bannedWords) {
 
 function createUser(db, user_name, bannedWords) {
   const ObjectId = Schema.ObjectId;
-  
+
   var wordArr = [];
   for (var i = 0; i < bannedWords.length; i++) {
     wordArr.push({ word: bannedWords[i], count: 1 });
@@ -41,16 +41,26 @@ function createUser(db, user_name, bannedWords) {
 }
 
 function updateUser(db, user_name, bannedWords) {
-  for (var i = 0; i < bannedWords.length; i++) {
-    db.collection('user_msg').updateOne({ user_name: user_name , "banned_words.word": bannedWords[i] }, {$inc:{"banned_words.$.count":1}});
+  // add new words w/count of 1, update existing words by incrementing count
+
+  var newBannedWords = new Set(bannedWords);
+  var knownBannedWords = new Set(Object.keys(db.collection('user_msg').find({user_name: user_name}).banned_words[0]));
+
+  for (var i = 0; i < newBannedWords.length; i++) {
+    // update count if word already used by user; else add new word
+    if (newBannedWords[i] in knownBannedWords) {
+      db.collection('user_msg').update({ user_name: user_name , "banned_words.word":newBannedWords[i]}, {$inc: {"banned_words.$.count":1} });
+    } else {
+      db.collection('user_msg').update({ user_name: user_name } , { $push: {banned_words: {word: newBannedWords[i], count: 1}} });
+    }
   }
 }
 
 function addOrUpdateBannedWords(db, bannedWords) {
   for (var i = 0; i < bannedWords.length; i++) {
       db.collection('banned_words').updateOne(
-        { word: bannedWords[i] }, 
-        { $inc: { count: 1 } }, 
+        { word: bannedWords[i] },
+        { $inc: { count: 1 } },
         { upsert : true });
   }
 }
