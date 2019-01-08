@@ -1,7 +1,8 @@
 const slackEventsApi = require('@slack/events-api');
 const bannedWords = require('./banned_words.js');
 const respond = require('./responses.js');
-const shameDb = require('./db.js');
+const addOrUpdateUserAndBannedWords = require('./db.js');
+
 const { getClientByTeamId } = require('./auth.js');
 const jiraMatcher = require('./jira_matcher.js');
 
@@ -31,7 +32,7 @@ slackEvents.on('message', (message, body) => {
       .catch(console.error);
 
       // add data to db
-      shameDb.addOrUpdateUserAndBannedWords(message.user, words);
+      addOrUpdateUserAndBannedWords(message.user, words);
     }
 
     var jiraMessage = jiraMatcher(message.text, message.user);
@@ -50,12 +51,19 @@ slackEvents.on('app_mention', (message, body) => {
     if (!slack) {
       return console.error('No authorization found for this team.');
     }
-    var response = `HELLO <@${message.user}> The following words are BANNED: *${bannedWords.join(', ')}*. Be warned. You will be shamed for using these words.`;
-
-    slack.chat.postMessage({
-      channel: message.channel,
-      text: response})
-    .catch(console.error);
+    if (message.text.toLowerCase().includes('shameboard')){
+      var response = `SHAMEBOARD`;
+      slack.chat.postMessage({
+        channel: message.channel,
+        text: response})
+      .catch(console.error);
+    } else {
+      var response = `HELLO <@${message.user}> The following words are BANNED: *${bannedWords.join(', ')}*. Be warned. You will be shamed for using these words.`;
+          slack.chat.postMessage({
+            channel: message.channel,
+            text: response})
+          .catch(console.error);
+    }
   }
 });
 

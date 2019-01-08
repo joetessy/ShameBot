@@ -1,5 +1,6 @@
 const express = require('express');
 const passport = require('passport');
+const slackEvents = require('./slack_events.js');
 
 const app = express();
 
