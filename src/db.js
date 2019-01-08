@@ -11,7 +11,7 @@ const addOrUpdateUserAndBannedWords = function(user_name, bannedWords) {
     const db = client.db("jg_slack_users");
 
     // check if user exists in collection; if so update counts, else create new
-    if (db.collection('user_msg').find({ user_name: user_name }).count() == 1) {
+    if (db.collection('user_msg').find({ user_name: user_name }).count() > 0) {
       updateUser(db, user_name, bannedWords);
     } else {
       createUser(db, user_name, bannedWords);
@@ -44,11 +44,11 @@ function updateUser(db, user_name, bannedWords) {
   // add new words w/count of 1, update existing words by incrementing count
 
   var newBannedWords = new Set(bannedWords);
-  var knownBannedWords = new Set(Object.keys(db.collection('user_msg').find({user_name: user_name}).banned_words[0]));
+  var knownBannedWords = db.collection('user_msg').findOne({user_name: user_name}).banned_words.map(x => x.word);
 
   for (var i = 0; i < newBannedWords.length; i++) {
     // update count if word already used by user; else add new word
-    if (newBannedWords[i] in knownBannedWords) {
+    if (knownBannedWords.includes(newBannedWords[i])) {
       db.collection('user_msg').update({ user_name: user_name , "banned_words.word":newBannedWords[i]}, {$inc: {"banned_words.$.count":1} });
     } else {
       db.collection('user_msg').update({ user_name: user_name } , { $push: {banned_words: {word: newBannedWords[i], count: 1}} });
