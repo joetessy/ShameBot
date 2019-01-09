@@ -55,7 +55,7 @@ function addOrUpdateBannedWords(db, bannedWords) {
   }  
 }
 
-async function retrieveWordCount(callback, callback2) {
+function retrieveCounts(callback, callback2) {
   MongoClient.connect(url, { useNewUrlParser: true }, function(err, client) {
     assert.equal(null, err);
     const db = client.db("jg_slack_users");
@@ -74,4 +74,4 @@ async function retrieveWordCount(callback, callback2) {
   });
 }
 
-module.exports = { addOrUpdateUserAndBannedWords, retrieveWordCount };
+module.exports = { addOrUpdateUserAndBannedWords, retrieveCounts };

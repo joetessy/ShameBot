@@ -1,9 +1,9 @@
 module.exports = function(words, user){
   if ( words.length === 1 ) {
     var word = words;
-    var response1 = `Shame on you! <@${user}>, You used a banned word. *${word}* is not allowed! :rage:`;
+    var response1 = `What a shame. <@${user}> just used the banned word: *${word}* :rage:`;
     var response2 = `Oh <@${user}>. You just used *${word}*, which is banned. How shameful.`;
-    var response3 = `EMERGENCY!! *${word}* is a banned word, <@${user}>! Figure your life out! :weary:`;
+    var response3 = `EMERGENCY!! *${word}* is a banned word, <@${user}>. Figure your life out! :weary:`;
     var response4 = `<@${user}> is on thin ice, obviously *${word}* is BANNED. :face_with_raised_eyebrow:`;
     var response5 = `:police_car::police_car: Call the police!! <@${user}> has used the banned word: *${word}*.`;
     var response6 = `Be careful of using *${word}*, its *banned*, <@${user}> :face_with_symbols_on_mouth:!`;
@@ -22,6 +22,6 @@ module.exports = function(words, user){
     var response7 = `:face_with_monocle: <@${user}>, don't you know *${words}* are banned?!`;
   }
 
-  var responses = [response1, response2, response3, response4, response5, response6, response7]  
-  return responses[Math.floor(Math.random() * responses.length)]      
+  var responses = [response1, response2, response3, response4, response5, response6, response7];
+  return responses[Math.floor(Math.random() * responses.length)]; 
 }

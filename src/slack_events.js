@@ -1,7 +1,7 @@
 const slackEventsApi = require('@slack/events-api');
 const bannedWords = require('./banned_words.js');
 const respond = require('./responses.js');
-const { addOrUpdateUserAndBannedWords, retrieveWordCount } = require('./db.js');
+const { addOrUpdateUserAndBannedWords, retrieveCounts } = require('./db.js');
 
 
 const { getClientByTeamId } = require('./auth.js');
@@ -61,7 +61,7 @@ slackEvents.on('app_mention', (message, body) => {
           text: response})
         .catch(console.error);
       }
-      var data = retrieveWordCount(buildTable, callback)
+      var data = retrieveCounts(buildTable, callback);
 
     } else {
       var response = `HELLO <@${message.user}> The following words are banned: *${bannedWords.join(', ')}*. Be warned. You will be shamed for using these words.`;

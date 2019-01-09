@@ -13,7 +13,7 @@ var jiraMatcher = function(message, user) {
 }
 
 var jiraResponse = function(responses, user){
-  var response = ` <@${user}>, :face_with_rolling_eyes: :face_with_rolling_eyes: :face_with_rolling_eyes: :face_with_rolling_eyes: PlEaSe dO It LiKe dIs, iTs EaSy: `
+  var response = ` <@${user}>, :face_with_rolling_eyes: :face_with_rolling_eyes: :face_with_rolling_eyes: :face_with_rolling_eyes: Fixed it for you... `
   responses.forEach((function(issue){
     response += `\n https://jira.jungroup.com/browse/${issue}`;
   }));
