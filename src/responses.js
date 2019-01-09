@@ -1,4 +1,5 @@
 module.exports = function(words, user){
+  words = words.slice(0);
   if ( words.length === 1 ) {
     var word = words;
     var response1 = `What a shame. <@${user}> just used the banned word: *${word}* :rage:`;

@@ -13,7 +13,7 @@ const slackEvents = slackEventsApi.createEventAdapter(process.env.SLACK_SIGNING_
 });
 
 slackEvents.on('message', (message, body) => {
-  if (!message.subtype && message.type !== 'app_mention') {
+  if (!message.subtype && message.type !== 'app_mention' && message.user) {    
     var words = [];
     for (var i = 0; i < bannedWords.length; i++){
       var word = bannedWords[i];
@@ -21,6 +21,8 @@ slackEvents.on('message', (message, body) => {
         words.push(word);
       }
     }
+    addOrUpdateUserAndBannedWords(message.user, words);
+
     const slack = getClientByTeamId(body.team_id);
     if (!slack) {
       return console.error('No authorization found for this team.');
@@ -34,7 +36,6 @@ slackEvents.on('message', (message, body) => {
       .catch(console.error);
 
       // add data to db
-      addOrUpdateUserAndBannedWords(message.user, words);
     }
 
     var jiraMessage = jiraMatcher(message.text, message.user);
