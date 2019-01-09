@@ -4,65 +4,57 @@ const assert = require('assert');
 const url = 'mongodb://jg_user:jgpwd2019@ds151354.mlab.com:51354/jg_slack_users';
 var Schema = mongoose.Schema;
 
+mongoose.Promise = global.Promise;
+mongoose.connect(url);
+
+var userMsgSchema = new mongoose.Schema( {
+  u_id: mongoose.Types.ObjectId,
+  user_name: String,
+  banned_words_count: Number,
+  date: Date
+});
+
+var bannedWordSchema = new mongoose.Schema( {
+  word: String,
+  count: Number
+});
+
+var UserMsg = mongoose.model("user_msg", userMsgSchema);
+var BannedWord = mongoose.model("banned_word", bannedWordSchema);
+
 const addOrUpdateUserAndBannedWords = function(user_name, bannedWords) {
-  MongoClient.connect(url, { useNewUrlParser: true }, function(err, client) {
-    assert.equal(null, err);
-
-    const db = client.db("jg_slack_users");
-
-    // check if user exists in collection; if so update counts, else create new
-    if (db.collection('user_msg').find({ user_name: user_name }).count() > 0) {
-      updateUser(db, user_name, bannedWords);
-    } else {
-      createUser(db, user_name, bannedWords);
+  var uniqueNewBannedWords = new Set(bannedWords);
+  var nNewBannedWords = Array.from(uniqueNewBannedWords.values()).length;
+  UserMsg.findOneAndUpdate(
+    {user_name: user_name},
+    {$inc : {banned_words_count: nNewBannedWords}},
+    {upsert: true},
+    function(err, doc) {
+      if (err) {
+        console.log(`UPDATE ERROR`);
+      } else {
+        console.log(`Added user: ${doc.user_name}`);
     }
-
-    // add banned word to collection
-    addOrUpdateBannedWords(db, bannedWords);
-
-    client.close();
   });
+
+  addOrUpdateBannedWords(bannedWords);
+
 };
 
-function createUser(db, user_name, bannedWords) {
-  const ObjectId = Schema.ObjectId;
-
-  var wordArr = [];
+function addOrUpdateBannedWords(bannedWords) {
   for (var i = 0; i < bannedWords.length; i++) {
-    wordArr.push({ word: bannedWords[i], count: 1 });
-  }
-
-  db.collection('user_msg').insertOne({
-    u_id: ObjectId,
-    user_name: user_name,
-    banned_words: wordArr,
-    date: Date
-  });
-}
-
-function updateUser(db, user_name, bannedWords) {
-  // add new words w/count of 1, update existing words by incrementing count
-
-  var newBannedWords = new Set(bannedWords);
-  var knownBannedWords = db.collection('user_msg').findOne({user_name: user_name}).banned_words.map(x => x.word);
-
-  for (var i = 0; i < newBannedWords.length; i++) {
-    // update count if word already used by user; else add new word
-    if (knownBannedWords.includes(newBannedWords[i])) {
-      db.collection('user_msg').update({ user_name: user_name , "banned_words.word":newBannedWords[i]}, {$inc: {"banned_words.$.count":1} });
-    } else {
-      db.collection('user_msg').update({ user_name: user_name } , { $push: {banned_words: {word: newBannedWords[i], count: 1}} });
+    BannedWord.findOneAndUpdate(
+        {word: bannedWords[i]},
+        { $inc: {count: 1} },
+        { upsert: true },
+        function(err, doc) {
+          if (err) {
+            console.log(`UPDATE ERROR`);
+          } else {
+            console.log(`Added banned_words: ${doc.word}`);
+          }
+      });
     }
-  }
-}
-
-function addOrUpdateBannedWords(db, bannedWords) {
-  for (var i = 0; i < bannedWords.length; i++) {
-      db.collection('banned_words').updateOne(
-        { word: bannedWords[i] },
-        { $inc: { count: 1 } },
-        { upsert : true });
-  }
 }
 
 module.exports = addOrUpdateUserAndBannedWords;
