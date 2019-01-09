@@ -5,9 +5,9 @@ module.exports = function(words, user){
     var response2 = `Oh <@${user}>. You just used *${word}*, which is banned. How shameful.`;
     var response3 = `EMERGENCY!! *${word}* is a banned word, <@${user}>! Figure your life out! :weary:`;
     var response4 = `<@${user}> is on thin ice, obviously *${word}* is BANNED. :face_with_raised_eyebrow:`;
-    var response5 = `Call the police!! <@${user}> has used the banned word: *${word}*. Disgusting!! :face_vomiting:`;
-    var response6 = `Quit using *${word}*, ITS *BANNED*, <@${user}> :face_with_symbols_on_mouth:!`;
-    var response7 = `<@${user}>, you should be ashamed of yourself, *${word}* is banned!`;    
+    var response5 = `:police_car::police_car: Call the police!! <@${user}> has used the banned word: *${word}*.`;
+    var response6 = `Be careful of using *${word}*, its *banned*, <@${user}> :face_with_symbols_on_mouth:!`;
+    var response7 = `<@${user}>, you should be ashamed of yourself, *${word}* is a banned words`;    
   } else {
     last_word = words[words.length - 1];
     last_word = `and ${last_word}`;

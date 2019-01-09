@@ -13,7 +13,7 @@ var jiraMatcher = function(message, user) {
 }
 
 var jiraResponse = function(responses, user){
-  var response = `Shaming <@${user}> for being lazy and not including the whole issue link!! :face_with_rolling_eyes: :face_with_rolling_eyes: :face_with_rolling_eyes: :face_with_rolling_eyes: PlEaSe dO It LiKe dIs, iTs EaSy: `
+  var response = ` <@${user}>, :face_with_rolling_eyes: :face_with_rolling_eyes: :face_with_rolling_eyes: :face_with_rolling_eyes: PlEaSe dO It LiKe dIs, iTs EaSy: `
   responses.forEach((function(issue){
     response += `\n https://jira.jungroup.com/browse/${issue}`;
   }));

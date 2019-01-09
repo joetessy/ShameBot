@@ -52,7 +52,26 @@ function addOrUpdateBannedWords(db, bannedWords) {
         { word: bannedWords[i] }, 
         { $inc: { count: 1 } }, 
         { upsert : true });
-  }
+  }  
 }
 
-module.exports = addOrUpdateUserAndBannedWords;
+async function retrieveWordCount(callback, callback2) {
+  MongoClient.connect(url, { useNewUrlParser: true }, function(err, client) {
+    assert.equal(null, err);
+    const db = client.db("jg_slack_users");
+    
+    var result = [];
+    var records = db.collection('banned_words').find().sort({count:-1}).limit(5);
+
+    records.each(function (err, doc) {
+          if (doc != null) {
+            result.push([doc.word, doc.count]);
+          } else {
+            callback(result, callback2);
+          }
+      });
+    client.close();
+  });
+}
+
+module.exports = { addOrUpdateUserAndBannedWords, retrieveWordCount };

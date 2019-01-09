@@ -1,10 +1,12 @@
 const slackEventsApi = require('@slack/events-api');
 const bannedWords = require('./banned_words.js');
 const respond = require('./responses.js');
-const addOrUpdateUserAndBannedWords = require('./db.js');
+const { addOrUpdateUserAndBannedWords, retrieveWordCount } = require('./db.js');
+
 
 const { getClientByTeamId } = require('./auth.js');
 const jiraMatcher = require('./jira_matcher.js');
+const buildTable =require('./table_builder.js');
 
 const slackEvents = slackEventsApi.createEventAdapter(process.env.SLACK_SIGNING_SECRET, {
   includeBody: true
@@ -53,12 +55,16 @@ slackEvents.on('app_mention', (message, body) => {
     }
     if (message.text.toLowerCase().includes('shameboard')){
       var response = `SHAMEBOARD`;
-      slack.chat.postMessage({
-        channel: message.channel,
-        text: response})
-      .catch(console.error);
+      callback = function(response){
+        slack.chat.postMessage({
+          channel: message.channel,
+          text: response})
+        .catch(console.error);
+      }
+      var data = retrieveWordCount(buildTable, callback)
+
     } else {
-      var response = `HELLO <@${message.user}> The following words are BANNED: *${bannedWords.join(', ')}*. Be warned. You will be shamed for using these words.`;
+      var response = `HELLO <@${message.user}> The following words are banned: *${bannedWords.join(', ')}*. Be warned. You will be shamed for using these words.`;
           slack.chat.postMessage({
             channel: message.channel,
             text: response})
@@ -79,3 +85,5 @@ ${JSON.stringify(error.body)}`);
 });
 
 module.exports = slackEvents;
+
+
