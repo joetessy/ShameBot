@@ -11,11 +11,7 @@ const addOrUpdateUserAndBannedWords = function(user_name, bannedWords) {
     const db = client.db("jg_slack_users");
 
     // check if user exists in collection; if so update counts, else create new
-    if (db.collection('user_msg').find({ user_name: user_name }).count() == 1) {
-      updateUser(db, user_name, bannedWords);
-    } else {
-      createUser(db, user_name, bannedWords);
-    }
+    addOrUpdateUser(db, user_name, bannedWords.length);
 
     // add banned word to collection
     addOrUpdateBannedWords(db, bannedWords);
@@ -55,19 +51,35 @@ function addOrUpdateBannedWords(db, bannedWords) {
   }  
 }
 
-function retrieveCounts(callback, callback2) {
+function addOrUpdateUser(db, user, count) {
+  db.collection('user_msgs').updateOne(
+    { user_name: `<@${user}>` }, 
+    { $inc: { banned_words_count: count } }, 
+    { upsert : true });
+}
+
+function retrieveCounts(callback, callback2, table) {
   MongoClient.connect(url, { useNewUrlParser: true }, function(err, client) {
     assert.equal(null, err);
     const db = client.db("jg_slack_users");
     
     var result = [];
-    var records = db.collection('banned_words').find().sort({count:-1}).limit(5);
+    
+    if (table === 'banned_words') {
+      var records = db.collection(table).find().sort({count:-1}).limit(5);
+    } else if (table === 'user_msgs') {
+      var records = db.collection(table).find().sort({banned_words_count:-1}).limit(5);
+    }
 
     records.each(function (err, doc) {
           if (doc != null) {
-            result.push([doc.word, doc.count]);
+            if (table === 'banned_words'){
+              result.push([doc.word, doc.count]);
+            } else if (table === 'user_msgs'){
+              result.push([doc.user_name, doc.banned_words_count])
+            }
           } else {
-            callback(result, callback2);
+            callback(result, callback2, table);
           }
       });
     client.close();

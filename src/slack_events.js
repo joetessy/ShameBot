@@ -62,7 +62,8 @@ slackEvents.on('app_mention', (message, body) => {
           text: response})
         .catch(console.error);
       }
-      var data = retrieveCounts(buildTable, callback);
+      var data = retrieveCounts(buildTable, callback, 'banned_words');
+      var data = retrieveCounts(buildTable, callback, 'user_msgs')
 
     } else {
       var response = `HELLO <@${message.user}> The following words are banned: *${bannedWords.join(', ')}*. Be warned. You will be shamed for using these words.`;
