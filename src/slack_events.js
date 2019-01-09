@@ -75,6 +75,21 @@ slackEvents.on('app_mention', (message, body) => {
   }
 });
 
+slackEvents.on('member_joined_channel', (message, body) => {
+  const slack = getClientByTeamId(body.team_id);
+  if (!slack) {
+    return console.error('No authorization found for this team.');
+  }
+  var greeting = `Greetings <@${message.user}>, I am the ShameBot. I will shame you for using banned words. Here is how you can interact with me: \n\n` +
+  `     *@ShameBot:* Displays banned words.\n`+ 
+  `     *@ShameBot shameboard:* Leaderboard for worst offenders and banned word frequency.\n` +
+  `     *Any Jira issue* (ex: PLAYER-1234) will be replaced with a full link`;
+      slack.chat.postMessage({
+        channel: message.channel,
+        text: greeting})
+      .catch(console.error);
+});
+
 slackEvents.on('error', (error) => {
   console.log(error);
   if (error.code === slackEventsApi.errorCodes.TOKEN_VERIFICATION_FAILURE) {
