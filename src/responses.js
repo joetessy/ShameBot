@@ -8,7 +8,7 @@ module.exports = function(words, user){
     var response4 = `<@${user}> is on thin ice, obviously *${word}* is BANNED. :face_with_raised_eyebrow:`;
     var response5 = `:police_car::police_car: Call the police!! <@${user}> has used the banned word: *${word}*.`;
     var response6 = `Be careful of using *${word}*, its *banned*, <@${user}> :face_with_symbols_on_mouth:!`;
-    var response7 = `<@${user}>, you should be ashamed of yourself, *${word}* is a banned words`;    
+    var response7 = `<@${user}>, you should be ashamed of yourself, *${word}* is a banned word.`;    
   } else {
     last_word = words[words.length - 1];
     last_word = `and ${last_word}`;

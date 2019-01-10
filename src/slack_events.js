@@ -80,9 +80,9 @@ slackEvents.on('member_joined_channel', (message, body) => {
   if (!slack) {
     return console.error('No authorization found for this team.');
   }
-  var greeting = `Greetings I am ShameBot. I will shame you for using banned words. Here is how you can interact with me: \n\n` +
-  `>>> *@ShameBot:* Will display the banned words. Don't use them!\n`+ 
-  `*@ShameBot shameboard:* Will display a leaderboard most frequently used banned words and the worst offenders.\n` +
+  var greeting = `Greetings I am JunBot. I will shame you for using banned words. Here is how you can interact with me: \n\n` +
+  `>>> *@JunBot:* Will display the banned words. Don't use them!\n`+ 
+  `*@JunBot shameboard:* Will display a leaderboard most frequently used banned words and the worst offenders.\n` +
   `*Any Jira issue* (ex: PLAYER-1234) entered will trigger a message showing the full link`;
       slack.chat.postMessage({
         channel: message.channel,
